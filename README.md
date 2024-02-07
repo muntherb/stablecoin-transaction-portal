@@ -34,4 +34,4 @@ Transfer Form can be found in the "Exchange" Tab
 
 ![First Tab Image](image.png)
 
-![alt text](image-1.png)
+![Form Tab](image-2.png)
