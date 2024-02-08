@@ -14,44 +14,26 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { CalendarDateRangePicker } from "@/components/date-range-picker"
-import { MainNav } from "@/components/main-nav"
 import { Overview } from "@/components/overview"
 import { RecentTransactions } from "@/components/recent-transactions"
-import { Search } from "@/components/search"
-import TeamSwitcher from "@/components/team-switcher"
-import { UserNav } from "@/components/user-nav"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { TransferForm } from "@/components/transfer-form"
+import { Suspense } from "react"
+import { getTransactions } from "@/services/getTransactions"
+import { getBalance } from "@/services/getBalance"
+import { Balance } from "@/models/balance"
+import { Transaction } from "@/models/transaction"
 
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Stablecoin Dashboard",
 }
 
-const cards = [
-  {
-    title: "",
-    icon: "",
-    value: "",
-    description: ""
-  }
-]
-
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const {transactions} = await getTransactions() as {transactions: Transaction[]}
+  const { balance } = await getBalance() as {balance: Balance[]}
   return (
     <main>
-      <div className="flex-col md:flex">
-        <div className="border-b">
-          <div className="flex h-16 items-center px-4">
-            <TeamSwitcher />
-            <MainNav className="mx-6" />
-            <div className="hidden ml-auto md:flex items-center space-x-4">
-              <Search />
-              <UserNav />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
+      <div className="flex-col flex">
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -60,6 +42,7 @@ export default function DashboardPage() {
               <Button>Download</Button>
             </div>
           </div>
+          <Suspense>
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -68,11 +51,12 @@ export default function DashboardPage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{
+                balance.map(({ title, value, description }) => 
+                <Card key={title}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Balance 
+                      {title} 
                     </CardTitle>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -86,89 +70,15 @@ export default function DashboardPage() {
                     >
                       <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
+
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">$45,231.89</div>
-                    <p className="text-xs text-muted-foreground">
-                      +20.1% from last month
-                    </p>
+                    <div className="text-2xl font-bold">{value}</div>
+                    <p className="text-xs text-muted-foreground">{description}</p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Earning 
-                    </CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+32.5%</div>
-                    <p className="text-xs text-muted-foreground">
-                      +5.5% from last month
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Deposits</CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <rect width="20" height="14" x="2" y="5" rx="2" />
-                      <path d="M2 10h20" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+$35,231.89</div>
-                    <p className="text-xs text-muted-foreground">
-                      +19% from last month
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Withdrawals
-                    </CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <rect width="20" height="14" x="2" y="5" rx="2" />
-                      <path d="M2 10h20" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">-$10,000</div>
-                    <p className="text-xs text-muted-foreground">
-                      +5% from last month
-                    </p>
-                  </CardContent>
-                </Card>
+                )
+              }
               </div>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-4">
@@ -187,7 +97,7 @@ export default function DashboardPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RecentTransactions />
+                    <RecentTransactions transactions={transactions} />
                   </CardContent>
                 </Card>
               </div>
@@ -203,6 +113,7 @@ export default function DashboardPage() {
               </div>
             </TabsContent>
           </Tabs>
+          </Suspense>
         </div>
       </div>
     </main>

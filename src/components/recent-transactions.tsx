@@ -3,39 +3,11 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { Transaction } from "@/models/transaction"
 
-const transactions = [
-  {
-    transactionId: "3",
-    title: "Deposit Funds",
-    currency: "usd",
-    description: "Jan 10 2024 13:49",
-    amount: "+$4,000"
-  },
-  {
-    transactionId: "2",
-    title: "Withdrawal Funds",
-    currency: "usd",
-    description: "Jan 2 2024 20:37",
-    amount: "-$7,000"
-  },
-  {
-    transactionId: "1",
-    title: "Received",
-    currency: "eth",
-    description: "Jan 1 2024 00:07",
-    amount: "23.53 ETH"
-  },
-  {
-    transactionId: "0",
-    title: "Transferred",
-    currency: "btc",
-    description: "Dec 23 2023 16:25",
-    amount: "0.05 BTC"
-  }
-]
 
-export function RecentTransactions() {
+export function RecentTransactions({transactions}:{transactions: Transaction[]}) {
+  if (!transactions || transactions.length === 0) return <></>
   return (
     <div className="space-y-8">
       {transactions.map(({ transactionId, title, currency, description, amount }, index) => (

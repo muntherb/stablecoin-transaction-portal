@@ -7,9 +7,10 @@ import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import { sendTransaction } from "@/services/sendTransaction"
+import { useToast } from "./ui/use-toast"
 
 export function TransferForm() {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -17,12 +18,16 @@ export function TransferForm() {
       address: ""
     },
   })
+  const { toast } = useToast()
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const res = await sendTransaction(values)
+    if (res.status === 200) {
+      toast({
+        title: res.message + " ✅",
+      })
+      form.reset()
+    }
   }
 
   return (
@@ -35,7 +40,7 @@ export function TransferForm() {
             <FormItem>
               <FormLabel>Amount</FormLabel>
               <FormControl>
-                <Input placeholder="0" {...field} type="number" min={0}/>
+                <Input placeholder="0" {...field} type="number" min={0} onKeyDown={(e) => e.code === 'Minus' ? e.preventDefault() : ''}/>
               </FormControl>
               <FormDescription>
                 Enter the amount you want to transfer.
